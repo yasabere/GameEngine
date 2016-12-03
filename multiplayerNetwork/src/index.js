@@ -7,6 +7,10 @@ import middleware from './middleware';
 import api from './api';
 import config from './config.json';
 
+const debug = require('debug')('my-namespace')
+const name = 'my-app'
+debug('booting %s', name)
+
 let app = express();
 app.server = http.createServer(app);
 
@@ -24,6 +28,11 @@ initializeDb( db => {
 
 	// internal middleware
 	app.use(middleware({ config, db }));
+
+	app.use(function timeLog (req, res, next) {
+	  debug(req.method + ' ' + req.url+ ' %s', name)
+		next();
+	});
 
 	// api router
 	app.use('/api', api({ config, db }));
